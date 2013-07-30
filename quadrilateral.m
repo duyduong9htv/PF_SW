@@ -14,14 +14,14 @@ x2 = point2(1); y2 = point2(2);
 b3 = y2 - a3*x2; 
 b4 = y2 - a3*x2;
 
-
+X = []; Y = [];
 [x0, y0] = lineIntersect(a1, b1, a3, b3);
-X = [X; x0]; Y = [y; y0]; 
+X = [X; x0]; Y = [Y; y0]; 
 [x0, y0] = lineIntersect(a1, b1, a4, b4);
-X = [X; x0]; Y = [y; y0]; 
+X = [X; x0]; Y = [Y; y0]; 
 [x0, y0] = lineIntersect(a2, b2, a4, b4);
-X = [X; x0]; Y = [y; y0]; 
+X = [X; x0]; Y = [Y; y0]; 
 [x0, y0] = lineIntersect(a2, b2, a3, b3);
-X = [X; x0]; Y = [y; y0]; 
+X = [X; x0]; Y = [Y; y0]; 
 
 end

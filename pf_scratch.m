@@ -161,7 +161,7 @@ for k = 1:10:878
         end   
     end     
     
-     plot2dd((obs), 'ko', 'linewidth', 1); 
+     plot2dd((obs), 'bo', 'linewidth', 1); 
 %     axis(a)
 end
 
@@ -172,12 +172,33 @@ plot2dd(particles, 'r.')
 
 p_update = []; 
 bearings = []; 
+tests = []; 
+locs = []; 
 for ii = 1:size(obs, 1)
     theta_x = calBearings(particles(ii, :), w.rcvLocs(k, :)); 
-    bearings = [bearings; theta_x];
-    theta_y = calBearings(obs(ii, :), w.rcvLocs(k, :)); 
-    p = calP_y_given_x(theta_y, theta_x); 
-    p_update = [p_update; p];     
+    alpha = 90 - theta_x; 
+    halfbw= 1;
+    a11 = tand(alpha - halfbw); 
+    a12 = tand(alpha + halfbw); 
+    
+    theta_x = calBearings(particles(ii, :), w.rcvLocs(k+30, :)); 
+    alpha = 90 - theta_x; 
+    a21 = tand(alpha - halfbw); 
+    a22 = tand(alpha + halfbw); 
+    
+    [X, Y] = quadrilateral(a11, a12, a21, a22, ...
+                            w.rcvLocs(k, :), w.rcvLocs(k+30, :));
+                        
+     test = inpolygon(obs(ii, 1), obs(ii, 2), X, Y);
+     tests = [tests; test]; 
+    inds = find(tests(:) > 0);temp = particles(inds, :);
+    inds = find(temp(:, 1) > w.rcvLocs(1, 1));
+    temp = temp(inds, :);
+    locs = [locs; mean(temp)]; 
+    bearings = [bearings; theta_x];    
+%     theta_y = calBearings(obs(ii, :), w.rcvLocs(k, :)); 
+%     p = calP_y_given_x(theta_y, theta_x); 
+%     p_update = [p_update; p];     
 end
 
 
