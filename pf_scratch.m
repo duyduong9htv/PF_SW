@@ -127,6 +127,57 @@ for k = 1:length(thetas)
 end
 
 
+%% Jul 30 
 
+load whaleAMay14loc_results.mat
+
+figure; hold on; plot2dd(w.rcvLocs, '--k'); 
+axis equal; 
+
+
+
+for k = 1:10:878
+    N = 10
+    obs = []; %observation 
+   disp(k); 
+    alpha = 90 - w.trueBearings(k); 
+    halfbw= 2;
+    a11 = tand(alpha - halfbw); 
+    a12 = tand(alpha + halfbw); 
+    
+    
+    alpha = 90 - w.trueBearings(k+30); 
+    a21 = tand(alpha - halfbw); 
+    a22 = tand(alpha + halfbw); 
+    
+    for a1 = linspace(a11, a12, N)
+        b1 = w.rcvLocs(k, 2) - a1*w.rcvLocs(k, 1); 
+        for a2 = linspace(a21, a22, N); 
+            b2 = w.rcvLocs(k+30, 2) - a2*w.rcvLocs(k+30, 1); 
+            [x0, y0] = lineIntersect(a1, b1, a2, b2);
+            obs = [obs; x0 y0]; 
+%              figure(6); plot(x0, y0, 'ko', 'linewidth', 1); 
+             
+        end   
+    end     
+    
+     plot2dd((obs), 'ko', 'linewidth', 1); 
+%     axis(a)
+end
+
+
+
+particles = updateParticles(obs, 5); 
+plot2dd(particles, 'r.')
+
+p_update = []; 
+bearings = []; 
+for ii = 1:size(obs, 1)
+    theta_x = calBearings(particles(ii, :), w.rcvLocs(k, :)); 
+    bearings = [bearings; theta_x];
+    theta_y = calBearings(obs(ii, :), w.rcvLocs(k, :)); 
+    p = calP_y_given_x(theta_y, theta_x); 
+    p_update = [p_update; p];     
+end
 
 

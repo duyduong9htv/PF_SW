@@ -12,6 +12,6 @@ function prob = calP_y_given_x(theta_y, theta_x)
 % end
 
 
-prob = normpdf(theta_y, theta_x, 1); 
+prob = normpdf(theta_y, theta_x, 1.5); 
     
 end
