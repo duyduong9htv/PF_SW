@@ -1,0 +1,22 @@
+function inds = randsampleDD(1:N, N, w)
+% function inds = randsampleDD(1:N, N, true, w)
+% a hack of the randsample.m file 
+% resamples the numbers from 1 to N following a weight distribution vector
+% w
+
+inds = [];
+w = w/sum(w); 
+w1 = round(w*N); 
+
+for k = 1:length(w1)
+    if w1(k) ~= 0 
+        inds = [inds; repmat(k, w1(k), 1)]; 
+    end
+end
+
+
+w2 = sort(w1); 
+
+
+
+end
