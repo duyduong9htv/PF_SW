@@ -137,11 +137,11 @@ axis equal;
 
 
 for k = 1:10:878
-    N = 10
+    N = 15
     obs = []; %observation 
    disp(k); 
     alpha = 90 - w.trueBearings(k); 
-    halfbw= 2;
+    halfbw= 1;
     a11 = tand(alpha - halfbw); 
     a12 = tand(alpha + halfbw); 
     
@@ -165,14 +165,16 @@ for k = 1:10:878
 %     axis(a)
 end
 
-
+abc 
 
 particles = updateParticles(obs, 5); 
 plot2dd(particles, 'r.')
 
 p_update = []; 
+bearings = []; 
 for ii = 1:size(obs, 1)
     theta_x = calBearings(particles(ii, :), w.rcvLocs(k, :)); 
+    bearings = [bearings; theta_x];
     theta_y = calBearings(obs(ii, :), w.rcvLocs(k, :)); 
     p = calP_y_given_x(theta_y, theta_x); 
     p_update = [p_update; p];     
