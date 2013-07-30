@@ -137,11 +137,11 @@ axis equal;
 
 
 for k = 1:10:878
-    N = 10
+    N = 15
     obs = []; %observation 
    disp(k); 
     alpha = 90 - w.trueBearings(k); 
-    halfbw= 2;
+    halfbw= 1;
     a11 = tand(alpha - halfbw); 
     a12 = tand(alpha + halfbw); 
     
