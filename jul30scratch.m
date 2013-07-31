@@ -163,3 +163,13 @@ end
 figure; plot2dd(w.rcvLocs, '--k'); hold on; 
 plot2dd(locs, 'ks');  plot2dd(locs, '--r'); axis equal 
 
+
+%% 
+
+figure; hold on; 
+for k = 1:850
+    d = ddist(locs(k, :), w.rcvLocs(k, :)); 
+    plot(k, d, '*'); 
+end
+
+

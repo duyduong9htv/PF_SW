@@ -6,12 +6,12 @@ load whaleAMay14loc_results.mat
 %% initialize
 %parameters 
 k = 1; 
-N = 50; %N^2 = number of particles 
+N = 30; %N^2 = number of particles 
 obs = []; %observation 
 ocs = []; 
 locs = []; 
 
-halfbw= 1.5;%half beam-width 
+halfbw= 1;%half beam-width 
  
 disp(k); 
 alpha = 90 - w.trueBearings(k); 
@@ -117,7 +117,7 @@ for k =  2:850 %2:850% 100 %850 %100 %850% 551:600 %880 %:1:878
     %     p_update = [p_update; p];     
     end
 
-    % find valid observations according to model 
+    %% find valid observations according to model 
     inds = tests(:) > 0;
     temp = particles(inds, :);
     inds = find(temp(:, 1) > w.rcvLocs(1, 1)); %one check point, find only whales on the right
@@ -162,4 +162,13 @@ end
 
 figure; plot2dd(w.rcvLocs, '--k'); hold on; 
 plot2dd(locs, 'ks');  plot2dd(locs, '--r'); axis equal 
+
+
+% 
+
+figure; hold on; 
+for k = 1:850
+    d = ddis
+end
+
 
