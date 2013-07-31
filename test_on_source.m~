@@ -14,11 +14,11 @@ w = TMA(rcv, rcvTime, measuredBearings,measurementTime, arrayHeading);
 %% initialize
 %parameters 
 k = 1; 
-N = 50; %N^2 = number of particles 
+N = 10; %N^2 = number of particles 
 obs = []; %observation 
 ocs = []; 
 locs = []; 
-
+step = 2; 
 halfbw= 1.5;%half beam-width 
  
 disp(k); 
@@ -28,14 +28,14 @@ a11 = tand(alpha - halfbw);
 a12 = tand(alpha + halfbw); 
 
 
-alpha = 90 - w.trueBearings(k+1); 
+alpha = 90 - w.trueBearings(k+step); 
 a21 = tand(alpha - halfbw); 
 a22 = tand(alpha + halfbw); 
 
 for a1 = linspace(a11, a12, N)
     b1 = w.rcvLocs(k, 2) - a1*w.rcvLocs(k, 1); 
     for a2 = linspace(a21, a22, N); 
-        b2 = w.rcvLocs(k+1, 2) - a2*w.rcvLocs(k+1, 1); 
+        b2 = w.rcvLocs(k+step, 2) - a2*w.rcvLocs(k+step, 1); 
         [x0, y0] = lineIntersect(a1, b1, a2, b2);
         obs = [obs; x0 y0]; 
 %              figure(6); plot(x0, y0, 'ko', 'linewidth', 1); 
@@ -57,15 +57,19 @@ locs = [locs; mean(particles)];
 
 
 
-for k =  2:20 %150 %2:850% 100 %850 %100 %850% 551:600 %880 %:1:878
+for k =  2:130 %150 %2:850% 100 %850 %100 %850% 551:600 %880 %:1:878
 %     N = 15
-    dt = mean([w.whaleTime(k) w.whaleTime(k+1)]) ...
-            - mean([w.whaleTime(k - 1), w.whaleTime(k)]); 
-    std_dev = dt*2; 
+
+    %% prediction 
+    dt = mean([w.whaleTime(k) w.whaleTime(k+step)]) ...
+            - mean([w.whaleTime(k - 1), w.whaleTime(k+step -1 )]); 
+    std_dev = dt*5; 
     particles = updateParticles(particles, std_dev); 
+    
+    %% obtaining observations 
    
     obs = []; %observation 
-    disp(k); 
+%     disp(k); 
     
     % first beam steered from first rcv location 
     alpha = 90 - w.trueBearings(k); 
@@ -74,21 +78,40 @@ for k =  2:20 %150 %2:850% 100 %850 %100 %850% 551:600 %880 %:1:878
     a12 = tand(alpha + halfbw); 
     
     %second beam steered from second rcv location
-    alpha = 90 - w.trueBearings(k+1); 
+    alpha = 90 - w.trueBearings(k+step); 
     a21 = tand(alpha - halfbw); 
     a22 = tand(alpha + halfbw); 
     
     for a1 = linspace(a11, a12, N)
         b1 = w.rcvLocs(k, 2) - a1*w.rcvLocs(k, 1); 
         for a2 = linspace(a21, a22, N); 
-            b2 = w.rcvLocs(k+1, 2) - a2*w.rcvLocs(k+1, 1); 
+            b2 = w.rcvLocs(k+step, 2) - a2*w.rcvLocs(k+step, 1); 
             [x0, y0] = lineIntersect(a1, b1, a2, b2);
+            if ddist([x0 y0], w.rcvLocs(k, :)) < 30e3 %constrained within some distance 
             obs = [obs; x0 y0]; 
+            end 
 %              figure(6); plot(x0, y0, 'ko', 'linewidth', 1); 
              
-        end   
-    end     
+        end    
+    end 
 
+    inds1 = []; 
+    for k1 = 1:size(obs, 1)
+        if ddist(obs(k1, :), locs(end, :)) < 10e3
+            inds1 = [inds1; k1]; 
+        end
+    end
+    
+    obs1 = obs(inds1, :); 
+    disp(size(obs, 1));
+    
+    if isempty(obs1)
+        particles = obs; 
+        locs = [locs; mean(obs)]; 
+    else 
+        obs = obs1 
+        
+        
     
     %% correction of predicted probability 
     p_update = []; 
@@ -124,6 +147,8 @@ for k =  2:20 %150 %2:850% 100 %850 %100 %850% 551:600 %880 %:1:878
     %     p = calP_y_given_x(theta_y, theta_x); 
     %     p_update = [p_update; p];     
     end
+    
+    disp(sum(tests)); pause(0.1); 
 
     %% find valid observations according to model 
     inds = tests(:) > 0;
@@ -132,8 +157,22 @@ for k =  2:20 %150 %2:850% 100 %850 %100 %850% 551:600 %880 %:1:878
     temp = temp(inds, :);
     inds = find(temp(:, 1) > w.rcvLocs(1, 1) - 20e3); 
     temp = temp(inds, :); 
-     
+    
+%     inds1 = []; 
+%     for k1 = 1:size(temp, 1)
+%         if ddist(temp(k1, :), locs(end, :)) < 2e3
+%             inds1 = [inds1; k]; 
+%         end
+%         
+%     end
+%     
+%     temp = temp(inds1, :); 
+%     
+    
+ 
     M = size(temp, 1); 
+
+
     if M > 10
         resampled_indices = randsample(M, N^2, true); 
         particles = temp(resampled_indices, :); 

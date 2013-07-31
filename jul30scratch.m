@@ -5,13 +5,13 @@ load whaleAMay14loc_results.mat
 
 %% initialize
 %parameters 
-k = 800; 
-N = 10; %N^2 = number of particles 
+k = 1; 
+N = 30; %N^2 = number of particles 
 obs = []; %observation 
 ocs = []; 
 locs = []; 
 
-halfbw= 1.5;%half beam-width 
+halfbw= 1;%half beam-width 
  
 disp(k); 
 alpha = 90 - w.trueBearings(k); 
