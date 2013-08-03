@@ -169,7 +169,69 @@ plot2dd(locs, 'ks');  plot2dd(locs, '--r'); axis equal
 figure; hold on; 
 for k = 1:850
     d = ddist(locs(k, :), w.rcvLocs(k, :)); 
-    plot(k, d, '*'); 
+    plot(w.whaleTime(k), d, '*'); 
 end
 
+
+for k = 1:850
+    plot2dd(locs(k, :), 'g*'); pause(0.1); 
+end
+
+
+%% choose points 
+
+figure; plot(mod(w.whaleTime(1:850)/60, 60), locs(:, 1), 'ko'); hold on; 
+
+[xPolygon,yPolygon]=getline(gcf,'closed')
+inx = find(inpolygon(w.whaleTime(1:850), locs(:, 1), xPolygon, yPolygon))
+hold on; 
+plot(w.whaleTime(inx), locs(inx, 1), 'ro'); 
+
+
+
+figure; plot(w.whaleTime(1:850), locs(:, 2), 'ko'); hold on; 
+
+[xPolygon,yPolygon]=getline(gcf,'closed')
+iny = find(inpolygon(w.whaleTime(1:850), locs(:, 2), xPolygon, yPolygon))
+hold on; 
+plot(w.whaleTime(iny), locs(iny, 2), 'ro'); 
+
+
+
+inds = intersect(inx, iny)
+
+
+%% plot 3-D result 
+% clear
+load sw_smooth_x_y
+figure;
+% depths_all = movingAverage(t, depths_all, 30); 
+x_origin = w.rcvLocs(1, 1); 
+y_origin = w.rcvLocs(1, 2); 
+plot3(w.rcvLocs(:, 1) - x_origin,...
+        w.rcvLocs(:, 2) - y_origin, -65*ones(size(w.rcvLocs(:, 1))), '-k', 'linewidth', 2); 
+
+plot3(w.rcvLocs(:, 1) - x_origin,...
+        w.rcvLocs(:, 2) - y_origin, -160*ones(size(w.rcvLocs(:, 1))), '--b', 'linewidth', 2); 
+
+plot3([0 0], [0 0], [-65 0], '--k')
+plot3(w.rcvLocs(end, 1)*[1 1] - x_origin, w.rcvLocs(end, 2)*[1 1] - y_origin, [-65 0], '--k')   
+    
+hold on; 
+plot3(x1 - x_origin, y1-y_origin, -depths_all, '--ro');
+
+plot3(x1 - x_origin, y1 - y_origin, -160*ones(size(x1)), 'bo');
+plot3(x1 - x_origin, y1 - y_origin, -160*ones(size(x1)), '--k', 'linewidth', 2);
+grid on; 
+box on; 
+
+% for k = [1 30 31 150 310 311 340 341 450 540]
+%     plot3([x1(k) x1(k)] - x_origin, [y1(k), y1(k)]-y_origin, [-depths_all(k) -160], 'k-')
+% end
+
+setFont(16); setFigureAuto; 
+xlabel('Eastings (m)'); ylabel('Northings (m)'); 
+zlabel('Depth (m)'); 
+ztl = get(gca, 'ztick'); 
+set(gca, 'zticklabel', -ztl); 
 

@@ -1,8 +1,0 @@
-function [X, Y] = quadrilateral(a1, a2, a3, a4, point1, point2)
-%   function [X, Y] = quadrilateral(a1, a2, a3, a4)
-% finds the quadrilateral formed by the intersections of the four lines
-% with linear coefficient a1, a2, a3 and a4. Lines with coefficient a1, a2 starts from point 1. Lines with coefficents 
-
-
-
-end
