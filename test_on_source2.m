@@ -15,18 +15,30 @@ r = [w.rcvLocs(1, 1)+initRange*sind(w.trueBearings(1)); ...
 
 r_all = []; 
 
+
+%% plot geometry of problem 
+
+figure; hold on; plot2dd(w.rcvLocs, '--k'); axis equal; 
+plot2dd(track.sourceLocation, 'b*'); %source true locations 
+
+plot2dd(r, 'r*'); %initial estimate 
+
+
+%%
+
 %generate N particles, first assuming that they're Gaussian distributed
 %around the initial guess 
 
 sigma = 20; 
-N = 500; 
-v = 5; %let velocity drift be about 2 m/s
+N = 100; 
+v = 0.5; %let velocity drift be about 2 m/s
 r_particles = repmat(r, N, 1); 
 r_all = r;  
 
 r_est = r; 
 
 for t = 2:length(w.trueBearings)
+    
     y_new = w.trueBearings(t); 
     p_y_given_x = []; 
     delta_t = w.whaleTime(t) - w.whaleTime(t - 1); 

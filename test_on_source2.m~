@@ -8,6 +8,8 @@ measurementTime = rcvTime;
 
 w = TMA(rcv, rcvTime, measuredBearings,measurementTime, arrayHeading);
 
+initRange = 12e3; 
+
 r = [w.rcvLocs(1, 1)+initRange*sind(w.trueBearings(1)); ...
     w.rcvLocs(1, 2) + initRange*cosd(w.trueBearings(1))]'; %initial range 
 
@@ -17,14 +19,15 @@ r_all = [];
 %around the initial guess 
 
 sigma = 20; 
-N = 1000; 
-v = 20; %let velocity drift be about 2 m/s
+N = 50; 
+v = 5; %let velocity drift be about 2 m/s
 r_particles = repmat(r, N, 1); 
 r_all = r;  
 
 r_est = r; 
 
 for t = 2:length(w.trueBearings)
+    
     y_new = w.trueBearings(t); 
     p_y_given_x = []; 
     delta_t = w.whaleTime(t) - w.whaleTime(t - 1); 
@@ -68,3 +71,9 @@ for t = 2:length(w.trueBearings)
     disp(t); 
     
 end
+
+%% check 
+
+figure; plot2dd(track.sourceLocation, '-r'); hold on; 
+plot2dd(w.rcvLocs, '--k'); axis equal
+plot2dd(r_all, '-*'); 
